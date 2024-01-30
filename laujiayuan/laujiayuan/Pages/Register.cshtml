@@ -1,0 +1,236 @@
+﻿@page
+@model WebApplication3.Pages.RegisterModel
+@{
+}
+
+@using System.Text.Json
+<!-- Add these links in the head section of your HTML -->
+<link rel="stylesheet" href="path/to/bootstrap-datepicker.css">
+<script src="path/to/bootstrap-datepicker.js"></script>
+<script src="path/to/bootstrap-datepicker.en.min.js"></script>
+<link rel="stylesheet" href="path/to/bootstrap.min.css">
+<link rel="stylesheet" href="path/to/zxcvbn.min.css">
+<script src="path/to/jquery.min.js"></script>
+<script src="path/to/bootstrap.min.js"></script>
+<script src="path/to/zxcvbn.min.js"></script>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function checkDATEOFB() {
+                var date_Input = $('input[name="RModel.DOB"]');
+                var TF_DOB = date_Input.val();
+
+
+                if (!isValidDate(TF_DOB)) {
+                    Warning_Msg(date_Input, "Date of Birth is invalid.");
+                    return false;
+                }
+
+
+
+
+                var dob_to_Date = new Date(TF_DOB);
+                var today = new Date(); // get today date
+
+                if (dob_to_Date <= today) {
+                    Warning_Msg(date_Input, "");
+                    return true;
+                }
+                else {
+                    Warning_Msg(date_Input, "Date of birth should not set after today's date");
+                    return false;
+                }
+            }
+
+
+            function isValidDate(dateString) {
+                var regex = /^\d{4}-\d{2}-\d{2}$/;
+                return regex.test(dateString);
+            }
+
+
+            function Warning_Msg(input, message) {
+                var validate_msg_spn = input.closest('.mb-3').find('.text-danger');
+                validate_msg_spn.text(message);
+            }
+
+            $('input[name="RModel.DOB"]').on('input', function () {
+                checkDATEOFB();
+            });
+
+            $('form').submit(function () {
+                return checkDATEOFB();
+            });
+
+
+            function password_requirement_check() {
+                var password = $('input[name="RModel.Password"]').val();
+
+                var points = 0;
+
+                if (/[A-Z]/.test(password) && /[a-z]/.test(password) && /[!#$%^&*(),.?":{}|<>1-9]/.test(password)) {
+                    points += 1;
+
+                }
+
+                if (password.length >= 12) {
+                    points += 1;
+                }
+
+                if (/[A-Z]/.test(password) && /[a-z]/.test(password)) {
+                    points += 1;
+                }
+
+                if (/[!#$%^&*(),.?":{}|<>1-9]/.test(password)) {
+                    points += 1;
+                }
+
+                var c = 'red';
+                if (points === 2) {
+                    c = 'orange';
+                } else if (points >= 3) {
+                    c = 'green';
+                }
+
+                $('#passwordStrength').html('Password Strength: <span style="color: ' + c + ';">' + points + '/4</span>');
+
+
+
+
+            }
+
+            password_requirement_check();
+
+            $('form').submit(
+                function () {
+                    var file_size_check = 2 * 1024 * 1024;
+
+                    var Resume_File = $('input[type="file"]');
+                    var File_Length = Resume_File[0].files[0].size;
+
+                    if (File_Length > file_size_check) {
+                        alert('File size exceeds the allowed limit.');
+                        return false;
+                    }
+
+                    return true;
+                });
+
+            $('input[name="RModel.Password"]').on('input',
+                function () {
+                    password_requirement_check();
+                });
+
+        });
+    </script>
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-sm-12 col-md-12 col-lg-4">
+            <h1 class="mb-3">Register</h1>
+
+            <form method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RModel.First_Name">First Name</label>
+                    <input type="Text" asp-for="RModel.First_Name" class="form-control" />
+                    <span asp-validation-for="RModel.First_Name" class="text-danger"></span>
+
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RModel.Last_Name">Last Name</label>
+                    <input type="Text" asp-for="RModel.Last_Name" class="form-control" />
+                    <span asp-validation-for="RModel.Last_Name" class="text-danger"></span>
+
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Gender</label>
+                    <div class="form-check">
+                        <input type="radio" asp-for="RModel.Gender" value="Male" class="form-check-input" />
+                        <label class="form-check-label">Male</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" asp-for="RModel.Gender" value="Female" class="form-check-input" />
+                        <label class="form-check-label">Female</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" asp-for="RModel.Gender" value="Other" class="form-check-input" />
+                        <label class="form-check-label">Other</label>
+                    </div>
+                    <span asp-validation-for="RModel.Gender" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RModel.NRIC">NRIC</label>
+                    <input type="Text" asp-for="RModel.NRIC" class="form-control" />
+                    <span asp-validation-for="RModel.NRIC" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RModel.DOB">Date of Birth</label>
+                    <input type="date" asp-for="RModel.DOB" class="form-control datepicker" autocomplete="off" />
+                    <span asp-validation-for="RModel.DOB" class="text-danger"></span>
+                </div>
+
+                <section Scripts>
+                    <script>
+                        $(document).ready(function () {
+                            $('.datepicker').datepicker({
+                                format: 'yyyy-mm-dd', 
+                                autoclose: true,
+                                todayHighlight: true
+                            });
+                        });
+                    </script>
+                </section>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RModel.Email">Email Address</label>
+                    <input type="Text" asp-for="RModel.Email" class="form-control" />
+                    <span asp-validation-for="RModel.Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RModel.Password">Password</label>
+                    <input type="password" asp-for="RModel.Password" class="form-control" />
+                    <span asp-validation-for="RModel.Password" class="text-danger"></span>
+                    <div class="mt-2" id="passwordStrength"></div>
+
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RModel.ConfirmPassword">Confirm Password</label>
+                    <input type="password" asp-for="RModel.ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="RModel.ConfirmPassword" class="text-danger"></span>
+                </div>
+
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="Resume">Resume</label>
+                    <input type="file" asp-for="Resume" class="form-control" />
+                    <span asp-validation-for="Resume" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="RModel.WhoAmI">WhoAmI</label>
+                    <input type="Text" asp-for="RModel.WhoAmI" class="form-control" />
+                    <span asp-validation-for="RModel.WhoAmI" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" id="submitBtn" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+

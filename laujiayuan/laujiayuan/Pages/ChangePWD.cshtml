@@ -1,0 +1,122 @@
+﻿@page
+@model laujiayuan.Pages.ChangePWDModel
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+
+
+            function checkPasswordStrength() {
+                var password = $('input[name="RModel.Password"]').val();
+
+                var points = 0;
+
+                if (/[A-Z]/.test(password) && /[a-z]/.test(password) && /[!#$%^&*(),.?":{}|<>1-9]/.test(password)) {
+                    points += 1;
+
+                }
+
+                if (password.length >= 12) {
+                    points += 1;
+                }
+
+                if (/[A-Z]/.test(password) && /[a-z]/.test(password)) {
+                    points += 1;
+                }
+
+                if (/[!#$%^&*(),.?":{}|<>1-9]/.test(password)) {
+                    points += 1;
+                }
+
+
+
+                var color = 'red';
+                if (points === 2) {
+                    color = 'orange';
+                } else if (points >= 3) {
+                    color = 'green';
+                }
+
+                $('#passwordStrength').html('Password Strength: <span style="color: ' + color + ';">' + points + '/4</span>');
+
+
+
+
+            }
+
+            checkPasswordStrength();
+
+            $('input[name="RModel.Password"]').on('input', function () {
+                checkPasswordStrength();
+            });
+
+        });
+    </script>
+}
+
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-sm-12 col-md-12 col-lg-4">
+            <h1 class="mb-3">Change Password</h1>
+
+            <form method="post" id="loginForm">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CModel.Current_Password">Current Password</label>
+                    <input type="password" asp-for="CModel.Current_Password" class="form-control" />
+                    <span asp-validation-for="CModel.Current_Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CModel.Password">Password</label>
+                    <input type="password" asp-for="CModel.Password" class="form-control" />
+                    <span asp-validation-for="CModel.Password" class="text-danger"></span>
+                    <div class="mt-2" id="passwordStrength"></div>
+
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" asp-for="CModel.ConfirmPassword">Confirm Password</label>
+                    <input type="password" asp-for="CModel.ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="CModel.ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <input type="hidden" asp-for="RecaptchaResponse" />
+
+                <div class="mb-3">
+                    <button type="button" id="submitBtn" class="btn btn-primary" onclick="requestRecaptchaToken()">Change</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://www.google.com/recaptcha/api.js?render=6Lf_xV4pAAAAAO02xrEnsBM-1-EjUWPmUs5f-5y4"></script>
+
+<script>
+    function requestRecaptchaToken() {
+        grecaptcha.ready(function () {
+            grecaptcha.execute('6Lf_xV4pAAAAAO02xrEnsBM-1-EjUWPmUs5f-5y4', { action: 'submit' })
+                .then(function (token) {
+                    // Add the reCAPTCHA response token to the hidden form field
+                    document.getElementById("RecaptchaResponse").value = token;
+
+                    // Submit the form
+                    document.getElementById("loginForm").submit();
+                });
+        });
+    }
+</script>

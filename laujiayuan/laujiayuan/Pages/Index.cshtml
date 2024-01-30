@@ -1,0 +1,28 @@
+﻿@page
+@inject IHttpContextAccessor _context;
+@inject IDataProtectionProvider _dataProtectionProvider;
+@using Microsoft.AspNetCore.DataProtection
+
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@{
+    var Email_Session = _context.HttpContext.Session.GetString("User_Email");
+     var set_Email = "";
+     if (Email_Session != null)
+     {
+         var protector = _dataProtectionProvider.CreateProtector("EmailProtection");
+         set_Email = protector.Unprotect(Email_Session);
+     }
+     else
+     {
+        set_Email = "";
+     }
+}
+
+<div class="text-center">
+    <h1 class="display-4">Ace Job Agency </h1>
+    <p>Ace Job Agency </p>
+    <h1>this is the Ace Job Agency and done by lucas</h1>
+</div>
